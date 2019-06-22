@@ -21,10 +21,8 @@ BASE_WEIGHT_MAP = {
 }
 BASE_VOLUME_MAP = {"g": 1, "kg": 0.001, "mg": 1000, "oz": 0.035274, "lb": 0.00220462}
 BASE_MAP = {**BASE_DISTANCE_MAP, **BASE_WEIGHT_MAP, **BASE_VOLUME_MAP}
-DISTANCES = tuple(BASE_DISTANCE_MAP)
-WEIGHTS = tuple(BASE_WEIGHT_MAP)
-VOLUMES = tuple(BASE_VOLUME_MAP)
-UNITS = set(DISTANCES + WEIGHTS + VOLUMES)
+UNITS = set(tuple(BASE_DISTANCE_MAP) + tuple(BASE_WEIGHT_MAP) + tuple(BASE_VOLUME_MAP))
+VALID = f"Distances: ft cm mm mi m yd km in\nWeights: lb mg kg oz g\nVolumes: floz qt cup mL L gal pint"
 
 
 class Unit(Enum):
@@ -34,9 +32,9 @@ class Unit(Enum):
 
 
 CATEGORIES = {
-    **{d: Unit.DISTANCE for d in DISTANCES},
-    **{v: Unit.VOLUME for v in VOLUMES},
-    **{w: Unit.WEIGHT for w in WEIGHTS},
+    **{d: Unit.DISTANCE for d in tuple(BASE_DISTANCE_MAP)},
+    **{v: Unit.VOLUME for v in tuple(BASE_VOLUME_MAP)},
+    **{w: Unit.WEIGHT for w in tuple(BASE_WEIGHT_MAP)},
 }
 
 
@@ -65,13 +63,13 @@ def validate(command):
     if not isfloat(amount):
         return f"Error: Invalid AMOUNT:{amount}. Please enter a decimal"
     if source_unit not in UNITS:
-        return f"Error: Invalid SOURCE_UNIT:{source_unit}. Valid units:{UNITS}"
+        return f"Error: Invalid SOURCE_UNIT:{source_unit}. Valid units:\n{VALID}"
     if dest_unit not in UNITS:
-        return f"Error: Invalid DESTINATION_UNIT:{dest_unit}. Valid units:{UNITS}"
+        return f"Error: Invalid DESTINATION_UNIT:{dest_unit}. Valid units:\n{VALID}"
     if connector != "in":
         return f"Error: Invalid connector:{connector}. Please use 'in'"
     if CATEGORIES[source_unit] is not CATEGORIES[dest_unit]:
-        return f"Error: Invalid categories. Tried to convert {CATEGORIES[source_unit]} {source_unit} to {CATEGORIES[dest_unit]} {dest_unit}"
+        return f"Error: Invalid categories. Tried to convert {CATEGORIES[source_unit]} to {CATEGORIES[dest_unit]}"
 
 
 def isfloat(amt):
